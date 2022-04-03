@@ -2,20 +2,25 @@ import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { TicketsContext } from "../../contexts/tickets.context";
+import { ReactComponent as Preloader } from '../../assets/loader.svg';
 
 const TicketItem = ({ statusId, tickets }) => {
   const navigate = useNavigate();
   const { setTickets } = useContext(TicketsContext);
 
-  const handleStatusChange = (id, newStatus) => {
+  const handleStatusChange = (event, id, newStatus) => {
     const index = tickets.findIndex(ticket => ticket.id === id);
     const updatedTicket = Object.assign({}, tickets[index], { status: newStatus });
-    setTickets(prevState => ([
-        ...prevState.slice(0, index),
-        updatedTicket,
-        ...prevState.slice(index + 1)
-      ])
-    );
+    event.target.querySelector('svg').classList.remove('hidden');
+    setTimeout(() => {
+      setTickets(prevState => ([
+          ...prevState.slice(0, index),
+          updatedTicket,
+          ...prevState.slice(index + 1)
+        ])
+      );
+    }, 700)
+    
   };
 
   useEffect(() => {
@@ -48,9 +53,9 @@ const TicketItem = ({ statusId, tickets }) => {
               ? <div key={ id } data-id={ id } className="bg-white text-sm rounded-md p-2 px-4 mt-4 shadow-md cursor-pointer hover:bg-gray-100" onClick={ handleTicketClick }>
                   <span className="font-bold whitespace-pre-line break-words" data-id={ id }>{ title }</span>
                   <div className="text-xs flex flex-wrap mt-3 gap-3" data-id={ id }>
-                    { statusId === 2 || statusId === 3 ? <div onClick={(e) => handleStatusChange(id, 1)} className='badge p-1 px-3 text-white bg-teal-500 hover:bg-teal-800 rounded-md'>open</div> : null }
-                    { statusId === 1 ? <div onClick={(e) => handleStatusChange(id, 2)} className='badge p-1 px-3 text-white bg-orange-400 rounded-md hover:bg-orange-600'>in progress</div> : null }
-                    { statusId === 1 || statusId === 2 ? <div onClick={(e) => handleStatusChange(id, 3)} className='badge p-1 px-3 text-white bg-green-500 hover:bg-green-700 rounded-md'>completed</div> : null}
+                    { statusId === 2 || statusId === 3 ? <div onClick={(e) => handleStatusChange(e, id, 1)} className="badge p-1 px-3 text-white bg-teal-500 hover:bg-teal-800 focus:bg-teal-800 active:bg-teal-800 rounded-md flex content-center justify-center"><Preloader className="hidden inline-block self-center mr-1 h-3 w-3" />open</div> : null }
+                    { statusId === 1 ? <div onClick={(e) => handleStatusChange(e, id, 2)} className="badge p-1 px-3 text-white bg-orange-400 rounded-md hover:bg-orange-600 flex content-center justify-center"><Preloader className="hidden inline-block self-center mr-1 h-3 w-3" />in progress</div> : null }
+                    { statusId === 1 || statusId === 2 ? <div onClick={(e) => handleStatusChange(e, id, 3)} className="badge p-1 px-3 text-white bg-green-500 hover:bg-green-700 rounded-md flex content-center justify-center"><Preloader className="hidden inline-block self-center mr-1 h-3 w-3" />completed</div> : null}
                   </div>
                 </div> 
               : null;
